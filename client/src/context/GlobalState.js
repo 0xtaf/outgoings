@@ -1,9 +1,12 @@
 import React, { createContext, useReducer } from 'react';
 import AppReducer from '../reducers/AppReducer';
+import axios from 'axios';
 
 // 1. create the initialState. I'll pass this into useReducer.
 const initialState = {
   transactions: [],
+  error: null,
+  loading: true
 };
 
 // 2. create a global context. I'll use its provider to wrap the children
@@ -15,6 +18,23 @@ export const GlobalProvider = ({ children }) => {
   const [state, dispatch] = useReducer(AppReducer, initialState);
   
   //I'll code the actions here because I want them all in a single related file like this.
+
+  const getTransactions = async () => {
+    try {
+      const res = await axios.get('/api/v1/transactions')
+      
+      dispatch({
+        type: 'GET_TRANSACTIONS',
+        payload: res.data.data
+      })
+    } catch (error) {
+      dispatch({
+        type: 'TRANSACTION_ERROR',
+        payload: error.response.data
+      })
+    }
+  }
+
   const deleteTransaction = (id) => {
     dispatch({
       type: 'DELETE_TRANSACTION',
@@ -35,6 +55,9 @@ export const GlobalProvider = ({ children }) => {
         transactions: state.transactions,
         deleteTransaction,
         addTransaction,
+        getTransactions,
+        error: state.error,
+        loading: state.loading
       }}
     >
       {children}
