@@ -2,6 +2,9 @@ const express = require('express');
 require('dotenv').config({path: './config/config.env'});
 const colors = require('colors');
 const morgan = require('morgan');
+const connectDB = require('./config/db')
+
+connectDB();
 
 const app = express();
 
