@@ -13,7 +13,7 @@ const Transaction = (props) => {
         {sign}
         {Math.abs(props.transaction.amount)}₺
       </span>
-      <button className="delete-btn" onClick={() => deleteTransaction(props.transaction.id)}>x</button>
+      <button className="delete-btn" onClick={() => deleteTransaction(props.transaction._id)}>x</button>
     </li>
   );
 };

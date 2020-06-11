@@ -6,7 +6,7 @@ import axios from 'axios';
 const initialState = {
   transactions: [],
   error: null,
-  loading: true
+  loading: true,
 };
 
 // 2. create a global context. I'll use its provider to wrap the children
@@ -16,30 +16,39 @@ export const GlobalContext = createContext(initialState); //I think I can delete
 // 3. create a global provider that'll wrap all those components who need this state
 export const GlobalProvider = ({ children }) => {
   const [state, dispatch] = useReducer(AppReducer, initialState);
-  
+
   //I'll code the actions here because I want them all in a single related file like this.
 
   const getTransactions = async () => {
     try {
-      const res = await axios.get('/api/v1/transactions')
-      
+      const res = await axios.get('/api/v1/transactions');
+
       dispatch({
         type: 'GET_TRANSACTIONS',
-        payload: res.data.data
-      })
+        payload: res.data.data,
+      });
     } catch (error) {
       dispatch({
         type: 'TRANSACTION_ERROR',
-        payload: error.response.data
-      })
+        payload: error.response.data,
+      });
     }
-  }
+  };
 
-  const deleteTransaction = (id) => {
-    dispatch({
-      type: 'DELETE_TRANSACTION',
-      payload: id,
-    });
+  const deleteTransaction = async (id) => {
+    try {
+      await axios.delete(`/api/v1/transactions/${id}`);
+
+      dispatch({
+        type: 'DELETE_TRANSACTION',
+        payload: id,
+      });
+    } catch (error) {
+      dispatch({
+        type: 'TRANSACTION_ERROR',
+        payload: error.response.data,
+      });
+    }
   };
 
   const addTransaction = (transaction) => {
@@ -57,7 +66,7 @@ export const GlobalProvider = ({ children }) => {
         addTransaction,
         getTransactions,
         error: state.error,
-        loading: state.loading
+        loading: state.loading,
       }}
     >
       {children}
